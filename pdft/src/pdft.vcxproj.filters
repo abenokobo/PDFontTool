@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="src\PDFontTool">
+      <UniqueIdentifier>{3aa26ac2-da22-4f79-81f7-5df4358db2a6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pdft.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="CharConv.cpp">
+      <Filter>src\PDFontTool</Filter>
+    </ClCompile>
+    <ClCompile Include="FontLoader.cpp">
+      <Filter>src\PDFontTool</Filter>
+    </ClCompile>
+    <ClCompile Include="FontRenderer.cpp">
+      <Filter>src\PDFontTool</Filter>
+    </ClCompile>
+    <ClCompile Include="GdipPNGWriter.cpp">
+      <Filter>src\PDFontTool</Filter>
+    </ClCompile>
+    <ClCompile Include="PDFontTool.cpp">
+      <Filter>src\PDFontTool</Filter>
+    </ClCompile>
+    <ClCompile Include="PDFontToolOption.cpp">
+      <Filter>src\PDFontTool</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaydateFntFileWriter.cpp">
+      <Filter>src\PDFontTool</Filter>
+    </ClCompile>
+    <ClCompile Include="WICPNGWriter.cpp">
+      <Filter>src\PDFontTool</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WICPNGWriter.h">
+      <Filter>src\PDFontTool</Filter>
+    </ClInclude>
+    <ClInclude Include="CharConv.h">
+      <Filter>src\PDFontTool</Filter>
+    </ClInclude>
+    <ClInclude Include="FontLoader.h">
+      <Filter>src\PDFontTool</Filter>
+    </ClInclude>
+    <ClInclude Include="FontRenderer.h">
+      <Filter>src\PDFontTool</Filter>
+    </ClInclude>
+    <ClInclude Include="GdipPNGWriter.h">
+      <Filter>src\PDFontTool</Filter>
+    </ClInclude>
+    <ClInclude Include="PDFontTool.h">
+      <Filter>src\PDFontTool</Filter>
+    </ClInclude>
+    <ClInclude Include="PDFontToolOption.h">
+      <Filter>src\PDFontTool</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaydateFntFileWriter.h">
+      <Filter>src\PDFontTool</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

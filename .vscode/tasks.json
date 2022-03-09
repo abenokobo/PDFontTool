@@ -1,0 +1,35 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build PDFontTool.pdx",
+            "type": "shell",
+            "command": ".vscode/build.bat",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Clean PDFontTool.pdx",
+            "type": "shell",
+            "command": ".vscode/clean.bat",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run PDFontTool.pdx",
+            "type": "shell",
+            "command": ".vscode/run.bat",
+            "problemMatcher": []
+        },
+        {
+            "label": "Convat Fonts",
+            "type": "shell",
+            "command": ".vscode/convert.bat",
+            "problemMatcher": []
+        }
+    ]
+}
