@@ -2,7 +2,7 @@
 
 PDFontTool is a Command-Line tool for Windows that converts TrueType (.ttf), OpenType (.otf) to fonts (.fnt + png) for [Playdate](https://play.date/).
 
-[日本語](readme-jp.md)
+[日本語](Readme-jp.md)
 
 ## Folder structure
 ```
