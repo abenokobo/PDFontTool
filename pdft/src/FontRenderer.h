@@ -57,6 +57,13 @@ public:
 #endif
 #endif
 
+
+	///
+	bool CalcCharacterSize(const CString utf16Char, CSize& size);
+
+	///
+	bool CalcFontBoxSize();
+
 	///
 	bool DrawUnicodeChars();
 

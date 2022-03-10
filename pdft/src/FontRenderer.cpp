@@ -1,3 +1,4 @@
+#include <iostream>
 #include "PDFontTool.h"
 #include "FontRenderer.h"
 #include "FontLoader.h"
@@ -35,23 +36,6 @@ bool FontRenderer::CreateResources
 	m_loader = loader;
 	m_option = option;
 
-	CComPtr<IDWriteTextLayout> layout;
-	HRESULT hr = m_DWriteFactory->CreateTextLayout(
-		L"", 1, m_loader->m_format, 0, 0,
-		&layout);
-	if (FAILED(hr) || !layout)
-	{
-		return false;
-	}
-
-	if (m_option->fontBoxSize.cx == 0 && m_option->fontBoxSize.cy == 0)
-	{
-		DWRITE_TEXT_METRICS metrix;
-		layout->GetMetrics(&metrix);
-		m_option->fontBoxSize.cx = static_cast<int>(ceil(metrix.height));
-		m_option->fontBoxSize.cy = m_option->fontBoxSize.cx;
-	}
-
 	for (auto ite = m_loader->m_unicodeRanges.begin(); ite != m_loader->m_unicodeRanges.end(); ite++)
 	{
 		for (UINT32 code = ite->first; code <= ite->last; code++)
@@ -60,12 +44,21 @@ bool FontRenderer::CreateResources
 		}
 	}
 
+	if (m_option->fontBoxSize.cx == 0 && m_option->fontBoxSize.cy == 0)
+	{
+		if (!CalcFontBoxSize())
+		{
+			std::wcout << L"Font size calculation failed." << std::endl;
+			return false;
+		}
+	}
+
 	m_sizeBitmap.cx = m_option->fontBoxSize.cx * 16;
 	m_sizeBitmap.cy = static_cast<LONG>(
 		((m_vecUnicodeChars.size() / 16) * m_option->fontBoxSize.cy) +
 		((m_vecUnicodeChars.size() % 16) ? m_option->fontBoxSize.cy : 0));
 
-	hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_D2D1Factory);
+	HRESULT hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_D2D1Factory);
 	if (FAILED(hr) || !m_D2D1Factory)
 	{
 		return false;
@@ -148,6 +141,71 @@ bool FontRenderer::CreateResources
 	if (!m_writer->OpenFntFile(szPath))
 	{
 		return false;
+	}
+
+	return true;
+}
+
+
+///
+bool FontRenderer::CalcCharacterSize
+(
+	CString utf16Char,
+	CSize& size
+)
+{
+	CComPtr<IDWriteTextLayout> layout;
+	HRESULT hr = m_DWriteFactory->CreateTextLayout(
+		utf16Char.GetBuffer(), utf16Char.GetLength(),
+		m_loader->m_format, 0, 0, &layout);
+	if (FAILED(hr) || !layout)
+	{
+		return false;
+	}
+
+	DWRITE_TEXT_METRICS textMetrics = { 0 };
+	hr = layout->GetMetrics(&textMetrics);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	size.cx = static_cast<LONG>(ceil(textMetrics.width));
+	size.cy = static_cast<LONG>(ceil(textMetrics.height));
+
+	return true;
+}
+
+
+///
+bool FontRenderer::CalcFontBoxSize
+(
+)
+{
+	CString utf16Char;
+	CSize size;
+
+	// Height is calculated with empty characters
+	if (!CalcCharacterSize(utf16Char, size))
+	{
+		return false;
+	}
+	m_option->fontBoxSize.cy = size.cy;
+
+	// Width is the largest of all letters
+	LONG width = 0;
+	for (auto ite = m_vecUnicodeChars.begin(); ite != m_vecUnicodeChars.end(); ite++)
+	{
+		PlaydateFntFileWriter::UTF32CharToUtf16Char(*ite, utf16Char);
+		if (!CalcCharacterSize(utf16Char, size))
+		{
+			return false;
+		}
+
+		if (m_option->fontBoxSize.cx < size.cx)
+		{
+			m_option->fontBoxSize.cx = size.cx;
+		}
 	}
 
 	return true;
