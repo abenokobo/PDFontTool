@@ -1,6 +1,6 @@
 # PDFontTool
 
-PDFontTool は TrueType(.ttf), OpenType(.otf) を [Playdate](https://play.date/jp/) で使用できるフォント (.fnt + png) に変換する Windows 用のコマンドラインツールです。
+PDFontTool は TrueType Font(.ttf), OpenType Font(.otf) を [Playdate](https://play.date/jp/) で使用できるフォント (.fnt + png) に変換する Windows (10 以降) 用のコマンドラインツールです。
 
 [English](Readme.md)
 
