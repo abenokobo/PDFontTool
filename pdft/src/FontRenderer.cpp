@@ -201,7 +201,7 @@ bool FontRenderer::DrawUnicodeChars
 	#ifdef DRAW_DEBUG_BOX
 		D2D1_RECT_F rcDebug = {
 			  left, top
-			, left + m_fontBoxSize, top + m_fontBoxSize };
+			, left + m_option->fontBoxSize.cx, top + m_option->fontBoxSize.cy };
 		m_renderTarget->FillRectangle(
 			rcDebug,
 			m_brushDebug[
