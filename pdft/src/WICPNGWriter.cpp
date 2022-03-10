@@ -1,4 +1,5 @@
 #include "WICPNGWriter.h"
+#include <iostream>
 
 
 
@@ -65,6 +66,11 @@ bool WICPNGWriter::WritePNGFile
 	hr = frame->WriteSource(bitmap, NULL);
 	if (FAILED(hr))
 	{
+		if (hr == WINCODEC_ERR_IMAGESIZEOUTOFRANGE)
+		{
+			std::wcout << L"The image size is outside the valid range." << std::endl;
+		}
+
 		return false;
 	}
 
