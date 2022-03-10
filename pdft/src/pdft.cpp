@@ -211,6 +211,7 @@ int wmain
 
     if (!DoCreate(inFilePath, outFolderPath, outFileName, fontSize, vecOption))
     {
+        std::wcout << L"Failed to create." << std::endl;
         return -1;
     }
 

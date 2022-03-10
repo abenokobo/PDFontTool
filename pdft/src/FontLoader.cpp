@@ -1,4 +1,5 @@
 ﻿#include <assert.h>
+#include <iostream>
 #include "FontLoader.h"
 
 
@@ -170,6 +171,7 @@ bool FontLoader::LoadFont
 {
 	if (!PreCreateFontResources(factory, fontPath))
 	{
+		std::wcout << L"Failed to create resource." << std::endl;
 		return false;
 	}
 

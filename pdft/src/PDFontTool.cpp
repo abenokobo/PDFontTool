@@ -1,6 +1,7 @@
 ﻿#include "PDFontTool.h"
 #include "FontLoader.h"
 #include "FontRenderer.h"
+#include <iostream>
 #include <gdiplus.h>
 #include <assert.h>
 
@@ -62,6 +63,7 @@ bool PDFontTool::CreatePDFont
 		(IUnknown**)&DWriteFactory);
 	if (FAILED(hr) || !DWriteFactory)
 	{
+		std::wcout << L"Failed to create DirectWrite objects." << std::endl << L"Windows 10 or later is required." << std::endl;
 		return false;
 	}
 
