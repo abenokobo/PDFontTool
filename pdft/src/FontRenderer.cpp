@@ -44,19 +44,21 @@ bool FontRenderer::CreateResources
 		}
 	}
 
-	if (m_option->fontBoxSize.cx == 0 && m_option->fontBoxSize.cy == 0)
+	if (!CalcRenderSize())
 	{
-		if (!CalcFontBoxSize())
-		{
-			std::wcout << L"Font size calculation failed." << std::endl;
-			return false;
-		}
+		std::wcout << L"Font size calculation failed." << std::endl;
+		return false;
 	}
 
-	m_sizeBitmap.cx = m_option->fontBoxSize.cx * 16;
+	if (m_option->gridSize.cx == 0 && m_option->gridSize.cy == 0)
+	{
+		m_option->gridSize = m_sizeRender;
+	}
+
+	m_sizeBitmap.cx = m_option->gridSize.cx * GRID_COLUMN_COUNT;
 	m_sizeBitmap.cy = static_cast<LONG>(
-		((m_vecUnicodeChars.size() / 16) * m_option->fontBoxSize.cy) +
-		((m_vecUnicodeChars.size() % 16) ? m_option->fontBoxSize.cy : 0));
+		((m_vecUnicodeChars.size() / GRID_COLUMN_COUNT) * m_option->gridSize.cy) +
+		((m_vecUnicodeChars.size() % GRID_COLUMN_COUNT) ? m_option->gridSize.cy : 0));
 
 	HRESULT hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_D2D1Factory);
 	if (FAILED(hr) || !m_D2D1Factory)
@@ -107,11 +109,11 @@ bool FontRenderer::CreateResources
 #ifdef _DEBUG
 #ifdef DRAW_DEBUG_BOX
 	m_renderTarget->CreateSolidColorBrush(
-		D2D1::ColorF(1.f, 0.f, 0.f, 0.25f), &m_brushDebug[0]);
+		D2D1::ColorF(1.f, 0.f, 0.f, 0.25f), &m_brushBackground[0]);
 	m_renderTarget->CreateSolidColorBrush(
-		D2D1::ColorF(0.f, 1.f, 0.f, 0.25f), &m_brushDebug[1]);
+		D2D1::ColorF(0.f, 1.f, 0.f, 0.25f), &m_brushBackground[1]);
 	m_renderTarget->CreateSolidColorBrush(
-		D2D1::ColorF(0.f, 0.f, 1.f, 0.25f), &m_brushDebug[2]);
+		D2D1::ColorF(0.f, 0.f, 1.f, 0.25f), &m_brushBackground[2]);
 #endif
 #endif
 
@@ -170,7 +172,7 @@ bool FontRenderer::CalcCharacterSize
 		return false;
 	}
 
-	size.cx = static_cast<LONG>(ceil(textMetrics.width));
+	size.cx = static_cast<LONG>(ceil(textMetrics.widthIncludingTrailingWhitespace));
 	size.cy = static_cast<LONG>(ceil(textMetrics.height));
 
 	return true;
@@ -178,7 +180,7 @@ bool FontRenderer::CalcCharacterSize
 
 
 ///
-bool FontRenderer::CalcFontBoxSize
+bool FontRenderer::CalcRenderSize
 (
 )
 {
@@ -190,7 +192,7 @@ bool FontRenderer::CalcFontBoxSize
 	{
 		return false;
 	}
-	m_option->fontBoxSize.cy = size.cy;
+	m_sizeRender.cy = size.cy;
 
 	// Width is the largest of all letters
 	LONG width = 0;
@@ -202,9 +204,14 @@ bool FontRenderer::CalcFontBoxSize
 			return false;
 		}
 
-		if (m_option->fontBoxSize.cx < size.cx)
+		if (!m_writer->AppendCharWidth(*ite, size.cx))
 		{
-			m_option->fontBoxSize.cx = size.cx;
+			return false;
+		}
+
+		if (m_sizeRender.cx < size.cx)
+		{
+			m_sizeRender.cx = size.cx;
 		}
 	}
 
@@ -222,58 +229,62 @@ bool FontRenderer::DrawUnicodeChars
 	static const D2D1_COLOR_F transparent = { 1.f, 1.f, 1.f, 0.f };
 	m_renderTarget->Clear(&transparent);
 
-	float left = 0;
-	float top = 0;
-	for (auto ite = m_vecUnicodeChars.begin(); ite != m_vecUnicodeChars.end(); ite++)
+	int rows = static_cast<int>(ceil(m_vecUnicodeChars.size() / (GRID_COLUMN_COUNT * 1.0f)));
+	for (int y = 0; y < rows; y++)
 	{
-		D2D1_RECT_F rcText = {
-			  left, top
-			, left + m_option->fontBoxSize.cx, top + m_option->fontBoxSize.cy };
-
-		CString utf16Char;
-		PlaydateFntFileWriter::UTF32CharToUtf16Char(*ite, utf16Char);
-
-		CComPtr<IDWriteTextLayout> layout;
-		HRESULT hr = m_DWriteFactory->CreateTextLayout(
-			utf16Char.GetBuffer(), utf16Char.GetLength(),
-			m_loader->m_format,
-			static_cast<float>(m_option->fontBoxSize.cx),
-			static_cast<float>(m_option->fontBoxSize.cy),
-			&layout);
-		if (FAILED(hr) || !layout)
+		for (int x = 0; x < GRID_COLUMN_COUNT; x++)
 		{
-			return false;
-		}
+			CString utf16Char;
+			unsigned int index = x + y * GRID_COLUMN_COUNT;
+			if (index < m_vecUnicodeChars.size())
+			{
+				PlaydateFntFileWriter::UTF32CharToUtf16Char(m_vecUnicodeChars[index], utf16Char);
+			}
+			else
+			{
+				utf16Char = L"";
+			}
 
-		DWRITE_TEXT_METRICS textMetrics = {0};
-		layout->GetMetrics(&textMetrics);
-		if (!m_writer->AppendCharWidth(*ite, static_cast<unsigned int>(ceil(textMetrics.widthIncludingTrailingWhitespace))))
-		{
-			return false;
-		}
+			CComPtr<IDWriteTextLayout> layout;
+			HRESULT hr = m_DWriteFactory->CreateTextLayout(
+				utf16Char.GetBuffer(), utf16Char.GetLength(),
+				m_loader->m_format,
+				static_cast<float>(m_sizeRender.cx),
+				static_cast<float>(m_sizeRender.cy),
+				&layout);
+			if (FAILED(hr) || !layout)
+			{
+				return false;
+			}
 
-		D2D1_POINT_2F pt = { left, top };
-		m_renderTarget->DrawTextLayout(pt, layout, m_brush);
+			D2D1_POINT_2F ptText = {
+				static_cast<float>(x * m_option->gridSize.cx),
+				static_cast<float>(y * m_option->gridSize.cy),
+			};
 
-	#ifdef _DEBUG
-	#ifdef DRAW_DEBUG_BOX
-		D2D1_RECT_F rcDebug = {
-			  left, top
-			, left + m_option->fontBoxSize.cx, top + m_option->fontBoxSize.cy };
-		m_renderTarget->FillRectangle(
-			rcDebug,
-			m_brushDebug[
-				std::distance(m_vecUnicodeChars.begin(), ite) % 3]);
-	#endif
-	#endif
+			D2D1_RECT_F rcText =
+				D2D1::RectF(
+					ptText.x, ptText.y,
+					ptText.x + m_option->gridSize.cx, ptText.y + m_option->gridSize.cy);
 
-		left += m_option->fontBoxSize.cx;
-		if (left >= m_option->fontBoxSize.cx * 16)
-		{
-			left = 0;
-			top += m_option->fontBoxSize.cy;
+			m_renderTarget->PushAxisAlignedClip(rcText, D2D1_ANTIALIAS_MODE_ALIASED);
+
+			// DrawTextLayout() sometimes ignored the clipping area, so we made sure to clear it.
+			m_renderTarget->Clear(D2D1::ColorF(0, 0));
+
+			m_renderTarget->DrawTextLayout(ptText, layout, m_brush);
+			m_renderTarget->PopAxisAlignedClip();
+
+#ifdef _DEBUG
+#ifdef DRAW_DEBUG_BOX
+			m_renderTarget->FillRectangle(
+				rcText,
+				m_brushBackground[(x + (y *GRID_COLUMN_COUNT)) % 3]);
+#endif
+#endif
 		}
 	}
+
 	HRESULT hr = m_renderTarget->EndDraw();
 	if (FAILED(hr))
 	{
@@ -291,8 +302,8 @@ bool FontRenderer::WritePNGFile()
 	strImageFileName.Format(
 		L"%s-table-%d-%d.png",
 		m_option->dstFileName.GetBuffer(),
-		m_option->fontBoxSize.cx,
-		m_option->fontBoxSize.cy);
+		m_option->gridSize.cx,
+		m_option->gridSize.cy);
 
 	wchar_t szPath[MAX_PATH];
 	::lstrcpy(szPath, m_option->dstPath.GetBuffer());

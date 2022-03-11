@@ -5,10 +5,16 @@
 #include <vector>
 
 
+//#define DRAW_DEBUG_BOX
+
+#define GRID_COLUMN_COUNT	(16)
+
+
 
 class FontLoader;
 class PlaydateFntFileWriter;
 class PDFontToolOption;
+
 
 
 
@@ -33,6 +39,9 @@ public:
 	CSize m_sizeBitmap;
 
 	///
+	CSize m_sizeRender;
+
+	///
 	CComPtr<IDWriteFactory3> m_DWriteFactory;
 
 	///
@@ -53,7 +62,7 @@ public:
 #ifdef _DEBUG
 #ifdef DRAW_DEBUG_BOX
 	///
-	CComPtr<ID2D1SolidColorBrush> m_brushDebug[3];
+	CComPtr<ID2D1SolidColorBrush> m_brushBackground[3];
 #endif
 #endif
 
@@ -62,7 +71,7 @@ public:
 	bool CalcCharacterSize(const CString utf16Char, CSize& size);
 
 	///
-	bool CalcFontBoxSize();
+	bool CalcRenderSize();
 
 	///
 	bool DrawUnicodeChars();
