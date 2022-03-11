@@ -2,6 +2,7 @@
 #include "PDFontToolOption.h"
 #include "GdipPNGWriter.h"
 #include "PlaydateFntFileWriter.h"
+#include "FontRenderer.h"
 
 
 
@@ -291,7 +292,7 @@ bool GdipPNGWriter::RecalcCharacterWidth
 		}
 
 		UINT32 uniChar = *ite;
-		CRect rcText(CPoint(left, top), option->fontBoxSize);
+		CRect rcText(CPoint(left, top), option->gridSize);
 		bool bFindPixel = false;
 		unsigned int leftX;
 		unsigned int rightX;
@@ -354,11 +355,11 @@ bool GdipPNGWriter::RecalcCharacterWidth
 		}
 	#endif
 
-		left += option->fontBoxSize.cx;
-		if (left >= option->fontBoxSize.cx * 16)
+		left += option->gridSize.cx;
+		if (left >= option->gridSize.cx * GRID_COLUMN_COUNT)
 		{
 			left = 0;
-			top += option->fontBoxSize.cy;
+			top += option->gridSize.cy;
 		}
 	}
 

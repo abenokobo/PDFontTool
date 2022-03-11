@@ -1,6 +1,7 @@
 ﻿#include <assert.h>
 #include <iostream>
 #include <string>
+#include <vector>
 #include "PDFontTool.h"
 
 
@@ -14,10 +15,53 @@ Font tool for Playdate.\n\
 [FONT SIZE]         Output font size (pixel).\n\
 \n\
 [OPTIONS]\n\
+-g\tSpecifying a grid size (width,height).\n\
 -R\tEnable recalc character width. (Recalculation may takes longer.)\n\
 -ma\tMargin for ASCII range (Must be specified with '-R')\n\
 -mo\tMargin for outside ASCII range (Must be specified with '-R')\n\
 ";
+
+
+///
+static bool ParseCommaSepNum
+(
+    const wchar_t* arg,
+    std::vector<long>& vecNum
+)
+{
+    const wchar_t* ptr = arg;
+    std::wstring buf;
+    while (*ptr != NULL)
+    {
+        if ((*ptr) == L',')
+        {
+            vecNum.push_back(_wtoi(buf.c_str()));
+            buf = L"";
+        }
+        else
+        if ((*ptr >= L'0') && (*ptr <='9'))
+        {
+            buf += *ptr;
+        }
+        else
+        {
+            return false;
+        }
+        ptr++;
+    }
+
+    if (!buf.empty())
+    {
+        vecNum.push_back(_wtoi(buf.c_str()));
+    }
+
+    if (vecNum.empty())
+    {
+        return false;
+    }
+
+    return true;
+}
 
 
 
@@ -87,6 +131,25 @@ static bool ParseOption
         }
         else
 #endif
+        if (*ite == L"-g")
+        {
+            ite++;
+            if (ite == vecOption.end())
+            {
+                std::wcout << L"-b OPTION require a numeric argument." << std::endl << std::endl;
+                return false;
+            }
+
+            std::vector<long> vecNum;
+            if (!ParseCommaSepNum(ite->c_str(), vecNum) || (vecNum.size() != 2))
+            {
+                std::wcout << L"-b OPTION require width,height argument." << std::endl << std::endl;
+                return false;
+            }
+            option.gridSize.cx = vecNum[0];
+            option.gridSize.cy = vecNum[1];
+        }
+        else
         if (*ite == L"-R")
         {
             option.enableRecalcCharacterWidth = true;

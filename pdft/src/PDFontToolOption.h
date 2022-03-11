@@ -4,7 +4,6 @@
 #include <vector>
 
 
-
 class PDFontToolOption
 {
 public:
@@ -33,8 +32,10 @@ public:
 		Optional
 	*/
 
-	///
-	CSize fontBoxSize;
+
+
+	/// Grid
+	CSize gridSize;
 
 
 

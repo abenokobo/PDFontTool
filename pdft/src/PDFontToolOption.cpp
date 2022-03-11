@@ -14,7 +14,7 @@ fontSize(nFontSize),
 fontPath(szFontPath),
 dstPath(szDstPath),
 dstFileName(szDstFileName),
-fontBoxSize(0, 0),
+gridSize(0, 0),
 enableRecalcCharacterWidth(false),
 marginAscii(2),
 marginOthers(4)
