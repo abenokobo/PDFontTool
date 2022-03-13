@@ -40,6 +40,20 @@ bool FontRenderer::CreateResources
 	{
 		for (UINT32 code = ite->first; code <= ite->last; code++)
 		{
+			if ((code >= 0) && (code <= 0x1f))
+			{
+				continue;
+			}
+			else
+			if (code == 0x7f)
+			{
+				continue;
+			}
+			else
+			if ((code >= 0x80) && (code <= 0x9f))
+			{
+				continue;
+			}
 			m_vecUnicodeChars.push_back(code);
 		}
 	}
