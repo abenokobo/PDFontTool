@@ -92,6 +92,24 @@ bool PlaydateFntFileWriter::UpdateCharWidth
 
 
 ///
+bool PlaydateFntFileWriter::AppendKerningPair
+(
+	UINT16 first,
+	UINT16 second,
+	int kernAmount
+)
+{
+	if (kernAmount == 0)
+	{
+		assert(false);
+		return false;
+	}
+	m_kerningPairs.push_back(KerningPair(first, second, kernAmount));
+	return true;
+}
+
+
+///
 bool PlaydateFntFileWriter::CloseFntFile
 (
 )
@@ -115,6 +133,17 @@ bool PlaydateFntFileWriter::CloseFntFile
 		m_charWidth.erase(ite);
 	}
 
+	while (!m_kerningPairs.empty())
+	{
+		auto ite = m_kerningPairs.begin();
+
+		CString strBuf;
+		strBuf.Format(L"%c%c\t%d", ite->first, ite->second, ite->kernAmount);
+		WriteUTF16LineWithConvertUTF8(m_file, strBuf.GetBuffer());
+
+		m_kerningPairs.erase(ite);
+	}
+	
 	fclose(m_file);
 	m_file = NULL;
 

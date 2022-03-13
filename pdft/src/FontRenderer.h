@@ -79,6 +79,9 @@ public:
 	///
 	bool WritePNGFile();
 
+	///
+	bool LoadKerningPairs();
+
 
 
 public:

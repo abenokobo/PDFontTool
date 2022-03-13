@@ -136,9 +136,12 @@ bool FontLoader::CreateFontResources
 
 	if (m_fontFace->HasKerningPairs())
 	{
-		// TODO: 
-		// Kerning Pairs
-		// https://docs.microsoft.com/en-us/windows/win32/api/dwrite_1/nf-dwrite_1-idwritefontface1-getkerningpairadjustments
+		// HasKerningPairs always returns FALSE.
+		// Since the cause was unknown, GDI's GetKerningPairs was used.
+		std::wcout << L"HasKerningPairs returns TRUE." << std::endl;
+
+		assert(false);
+		return false;
 	}
 
 	return true;
@@ -149,6 +152,7 @@ bool FontLoader::CreateFontResources
 FontLoader::FontLoader
 (
 )
+: m_fontSize(0)
 {
 }
 
@@ -169,6 +173,10 @@ bool FontLoader::LoadFont
 	int fontSize
 )
 {
+	m_factory = factory;
+	m_fontPath = fontPath;
+	m_fontSize = fontSize;
+
 	if (!PreCreateFontResources(factory, fontPath))
 	{
 		std::wcout << L"Failed to create resource." << std::endl;

@@ -73,7 +73,6 @@ bool PDFontTool::CreatePDFont
 		return false;
 	}
 
-
 	if (!m_renderer->CreateResources(DWriteFactory, m_loader, &m_option))
 	{
 		return false;

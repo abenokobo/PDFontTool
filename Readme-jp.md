@@ -56,9 +56,6 @@ pdft [OPTIONS]... [SOURCE] [OUTPUT FOLDER] [OUTPUT FILENAME] [FONT SIZE]
 PDFontTool.pdx は pdft.exe で生成したフォントを確認するための Playdate 用テストアプリケーションです。
 Visual Studio Code を利用して、ビルド、実行できるようにしています。
 
-## TODO
-- カーニングペア対応
-
 ## サンプル
 ![PDFontTool](PDFontTool.gif)
 

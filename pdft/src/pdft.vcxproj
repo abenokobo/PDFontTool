@@ -155,6 +155,7 @@
     <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="FontRenderer.cpp" />
     <ClCompile Include="GdipPNGWriter.cpp" />
+    <ClCompile Include="KerningPairLoader.cpp" />
     <ClCompile Include="PDFontTool.cpp" />
     <ClCompile Include="PDFontToolOption.cpp" />
     <ClCompile Include="pdft.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="FontLoader.h" />
     <ClInclude Include="FontRenderer.h" />
     <ClInclude Include="GdipPNGWriter.h" />
+    <ClInclude Include="KerningPairLoader.h" />
     <ClInclude Include="PDFontTool.h" />
     <ClInclude Include="PDFontToolOption.h" />
     <ClInclude Include="PlaydateFntFileWriter.h" />

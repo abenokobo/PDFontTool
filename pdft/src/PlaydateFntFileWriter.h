@@ -3,6 +3,18 @@
 #include <atlstr.h>
 
 
+struct KerningPair
+{
+	UINT16 first;
+	UINT16 second;
+	int kernAmount;
+
+	KerningPair(UINT16 fst, UINT16 snd, int amount)
+		: first(fst), second(snd), kernAmount(amount)
+	{
+	}
+};
+
 
 ///
 class PlaydateFntFileWriter
@@ -15,6 +27,9 @@ private:
 
 	///
 	std::vector<std::pair<UINT32, unsigned int>> m_charWidth;
+
+	///
+	std::vector<KerningPair> m_kerningPairs;
 
 
 
@@ -43,6 +58,9 @@ public:
 
 	///
 	bool UpdateCharWidth(UINT32 unicodeChar, unsigned int width);
+
+	///
+	bool AppendKerningPair(UINT16 first, UINT16 second, int kernAmount);
 
 	///
 	bool CloseFntFile();

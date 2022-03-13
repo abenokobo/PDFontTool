@@ -1,10 +1,12 @@
 #include <iostream>
+#include <assert.h>
 #include "PDFontTool.h"
 #include "FontRenderer.h"
 #include "FontLoader.h"
 #include "WICPNGWriter.h"
 #include "GdipPNGWriter.h"
 #include "PlaydateFntFileWriter.h"
+#include "KerningPairLoader.h"
 
 
 
@@ -215,7 +217,9 @@ bool FontRenderer::CalcRenderSize
 		PlaydateFntFileWriter::UTF32CharToUtf16Char(*ite, utf16Char);
 		if (!CalcCharacterSize(utf16Char, size))
 		{
-			return false;
+			assert(false);
+			size.cx = 0;
+			//return false;
 		}
 
 		if (!m_writer->AppendCharWidth(*ite, size.cx))
@@ -333,10 +337,21 @@ bool FontRenderer::WritePNGFile()
 		return false;
 	}
 
-	m_writer->CloseFntFile();
-	m_writer = NULL;
-
 	return true;
+}
+
+
+///
+bool FontRenderer::LoadKerningPairs
+(
+)
+{
+	auto kerning = std::make_shared<KerningPairLoader>(m_loader, m_writer);
+	if (kerning == NULL)
+	{
+		return false;
+	}
+	return kerning->LoadKerningPairs();
 }
 
 
@@ -354,6 +369,18 @@ bool FontRenderer::RenderFont
 	{
 		return false;
 	}
+
+	if (!LoadKerningPairs())
+	{
+		return false;
+	}
+
+	if (!m_writer->CloseFntFile())
+	{
+		return false;
+	}
+
+	m_writer = NULL;
 
 	return true;
 }

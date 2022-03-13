@@ -31,6 +31,15 @@ public:
 
 
 	///
+	CComPtr<IDWriteFactory3> m_factory;
+
+	///
+	CString m_fontPath;
+
+	///
+	int m_fontSize;
+
+	///
 	CComPtr<IDWriteTextFormat> m_format;
 
 	///

@@ -37,6 +37,9 @@
     <ClCompile Include="WICPNGWriter.cpp">
       <Filter>src\PDFontTool</Filter>
     </ClCompile>
+    <ClCompile Include="KerningPairLoader.cpp">
+      <Filter>src\PDFontTool</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WICPNGWriter.h">
@@ -61,6 +64,9 @@
       <Filter>src\PDFontTool</Filter>
     </ClInclude>
     <ClInclude Include="PlaydateFntFileWriter.h">
+      <Filter>src\PDFontTool</Filter>
+    </ClInclude>
+    <ClInclude Include="KerningPairLoader.h">
       <Filter>src\PDFontTool</Filter>
     </ClInclude>
   </ItemGroup>
