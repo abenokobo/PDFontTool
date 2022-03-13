@@ -136,12 +136,9 @@ bool FontLoader::CreateFontResources
 
 	if (m_fontFace->HasKerningPairs())
 	{
-		// HasKerningPairs always returns FALSE.
+		// HasKerningPairs() may return FALSE even if there are kerning pairs.
 		// Since the cause was unknown, GDI's GetKerningPairs was used.
-		std::wcout << L"HasKerningPairs returns TRUE." << std::endl;
-
-		assert(false);
-		return false;
+		std::wcout << L"info: HasKerningPairs returns TRUE." << std::endl;
 	}
 
 	return true;
