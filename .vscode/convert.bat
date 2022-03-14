@@ -1,17 +1,22 @@
 SET PDFT="pdft/bin/x64/pdft.exe"
 SET OUTPUT_DIR="Source/fonts/"
 
+
 rd /S /Q %OUTPUT_DIR%
 mkdir %OUTPUT_DIR%
 
-exit
+
+@echo off
 
 rem Create a font in %OUTPUT_DIR% and it will appear in PDFontTool.pdx.
 rem Below are the fonts used for the test.
 
-rem %OUTPUT_DIR% にフォントを作成すると、PDFontTool.pdx で表示されます。
-rem 以下、試験に利用したフォントです。
+SET DO_CONVERT_TEST=1
+SET DO_RECALC_CONVERT_TEST=1
 
+
+if "%DO_CONVERT_TEST%" == "1" ( goto CONVERT_TEST ) else ( goto CONVERT_TEST_END )
+:CONVERT_TEST
 %PDFT% "test-data/M_PLUS_Rounded_1c/MPLUSRounded1c-Thin.ttf" %OUTPUT_DIR% "MPLUSRounded1c-Thin16" 16
 %PDFT% "test-data/M_PLUS_Rounded_1c/MPLUSRounded1c-Thin.ttf" %OUTPUT_DIR% "MPLUSRounded1c-Thin24" 24
 %PDFT% "test-data/M_PLUS_Rounded_1c/MPLUSRounded1c-Thin.ttf" %OUTPUT_DIR% "MPLUSRounded1c-Thin32" 32
@@ -37,9 +42,18 @@ rem 以下、試験に利用したフォントです。
 %PDFT% "test-data/Yanone_Kaffeesatz/YanoneKaffeesatz-VariableFont_wght.ttf" %OUTPUT_DIR% "YanoneKaffeesatz-VariableFont_wght24" 24
 %PDFT% "test-data/Yusei_Magic/YuseiMagic-Regular.ttf" %OUTPUT_DIR% "YuseiMagic-Regular24" 24
 %PDFT% "test-data/x12y16pxMaruMonica_2021-06-17/x12y16pxMaruMonica.ttf" %OUTPUT_DIR% "MaruMonica" 16
+:CONVERT_TEST_END
+
+
+
+if "%DO_RECALC_CONVERT_TEST%" == "1" ( goto RECALC_CONVERT_TEST ) else ( goto RECALC_CONVERT_TEST_END )
+:RECALC_CONVERT_TEST
 %PDFT% -R -ma 1 -mo 2 "test-data/jfdotfont-20150527/JF-Dot-ShinonomeMin14.ttf" %OUTPUT_DIR% "ShinonomeMin14" 14
 %PDFT% -R -ma 1 -mo 2 "test-data/jfdotfont-20150527/JF-Dot-ShinonomeMin16.ttf" %OUTPUT_DIR% "ShinonomeMin16" 16
 %PDFT% -R -ma 1 -mo 2 "test-data/jfdotfont-20150527/JF-Dot-ShinonomeMin16B.ttf" %OUTPUT_DIR% "ShinonomeMin16B" 16
 %PDFT% -R -ma 1 -mo 2 "test-data/khdotfont-20150527/KH-Dot-Hibiya-24.ttf" %OUTPUT_DIR% "Hibiya-24" 24
 %PDFT% -R -ma 1 -mo 2 "test-data/khdotfont-20150527/KH-Dot-Kagurazaka-16.ttf" %OUTPUT_DIR% "Kagurazaka-16" 16
+:RECALC_CONVERT_TEST_END
+
+
 
