@@ -1,5 +1,6 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
+import "CoreLibs/timer"
 
 local pd = playdate
 local gfx = pd.graphics
@@ -12,14 +13,17 @@ local TEXT_TEMPLATE =
     "",
     "",
     "天の原ふりさけみれば春日なる",
-    "三笠の山にいでし月かも 安倍仲麿"
+    "三笠の山に出でし月かも 安倍仲麿"
 }
 local FONT_PATH = "fonts/"
 
 
 --
-local fonts = {}
-local fontIndex = 0
+local _fontDetails = {}
+local _nowFontIndex = 0
+local _nowFont = nil
+local _nowLoading = false
+
 
 --
 local function enumFonts()
@@ -29,24 +33,38 @@ local function enumFonts()
     end
     for i = 1, #files do
         local name = files[i]
-        local font = gfx.font.new(FONT_PATH .. name)
-        if font then
-            fonts[#fonts + 1] = {name=name, font=font}
+        local findExt = string.find(name, '%.')
+        if not findExt then
+            goto continue
         end
+
+        local ext = string.sub(name, findExt + 1, #name)
+        if ext == "pft" then
+            --print("Font found " .. #_fontDetails + 1 .. " : " .. name)
+            _fontDetails[#_fontDetails + 1] = {name=name, path=FONT_PATH .. name}
+        end
+
+        ::continue::
     end
 end
 
 
 --
 local function updateFont()
-    if #fonts == 0 then
+    if #_fontDetails == 0 then
         return
     end
 
-    fontIndex = fontIndex + 1
-    if #fonts < fontIndex then
-        fontIndex = 1
+    _nowFontIndex = _nowFontIndex + 1
+    if #_fontDetails < _nowFontIndex then
+        _nowFontIndex = 1
     end
+
+    _nowLoading = true
+    pd.timer.performAfterDelay(1, function ()
+        _nowFont = gfx.font.new(_fontDetails[_nowFontIndex].path)
+        _nowLoading = false
+    end)
 end
 
 
@@ -55,22 +73,31 @@ local function drawText()
     gfx.setColor(gfx.kColorWhite)
     gfx.fillRect(0, 0, 400, 240)
 
-    local font = fonts[fontIndex]
-    if not font then
-        gfx.drawText("\"" .. FONT_PATH .."\" is empty.", 10, 10)
+    if _nowLoading then
+        gfx.drawText("Loading ...", 10, 10)
+        return
+    end
+
+    local detail = _fontDetails[_nowFontIndex]
+    if not detail then
+        return
+    end
+
+    if not _nowFont then
+        gfx.drawText("\"" .. detail.name .."\" is empty.", 10, 10)
         return
     end
 
     gfx.setColor(gfx.kColorBlack)
-    gfx.setFont(font.font)
+    gfx.setFont(_nowFont)
 
-    TEXT_TEMPLATE[1] = "(" .. fontIndex .. "/" .. #fonts .. ") " .. TEXT_TITLE
-    TEXT_TEMPLATE[2] = font.name
+    TEXT_TEMPLATE[1] = "(" .. _nowFontIndex .. "/" .. #_fontDetails .. ") " .. TEXT_TITLE
+    TEXT_TEMPLATE[2] = detail.name
 
     local y = 10
     for i = 1, #TEXT_TEMPLATE do
         gfx.drawText(TEXT_TEMPLATE[i], 10, y)
-        y = y + font.font:getHeight()
+        y = y + _nowFont:getHeight()
     end
 end
 
@@ -85,6 +112,7 @@ end
 --
 function pd.update()
     drawText()
+    pd.timer.updateTimers()
 end
 
 
