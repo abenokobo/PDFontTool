@@ -38,6 +38,13 @@ bool FontRenderer::CreateResources
 	m_loader = loader;
 	m_option = option;
 
+	///
+	if (!CalcRenderHeight())
+	{
+		assert(false);
+		return false;
+	}
+
 	for (auto ite = m_loader->m_unicodeRanges.begin(); ite != m_loader->m_unicodeRanges.end(); ite++)
 	{
 		for (UINT32 code = ite->first; code <= ite->last; code++)
@@ -56,14 +63,12 @@ bool FontRenderer::CreateResources
 			{
 				continue;
 			}
-			m_vecUnicodeChars.push_back(code);
-		}
-	}
 
-	if (!CalcRenderSize())
-	{
-		std::wcout << L"Font size calculation failed." << std::endl;
-		return false;
+			if (CalcRenderCharWidth(code))
+			{
+				m_vecUnicodeChars.push_back(code);
+			}
+		}
 	}
 
 	if (m_option->gridSize.cx == 0 && m_option->gridSize.cy == 0)
@@ -196,41 +201,54 @@ bool FontRenderer::CalcCharacterSize
 
 
 ///
-bool FontRenderer::CalcRenderSize
+bool FontRenderer::CalcRenderHeight
 (
 )
 {
-	CString utf16Char;
 	CSize size;
 
 	// Height is calculated with empty characters
+	if (!CalcCharacterSize(L"", size))
+	{
+		return false;
+	}
+	
+	m_sizeRender.cy = size.cy;
+	return true;
+}
+
+
+///
+bool FontRenderer::CalcRenderCharWidth
+(
+	UINT32 utf32Char
+)
+{
+	CSize size;
+	CString utf16Char;
+
+	// Width is the largest of all letters
+	LONG width = 0;
+
+	PlaydateFntFileWriter::UTF32CharToUtf16Char(utf32Char, utf16Char);
 	if (!CalcCharacterSize(utf16Char, size))
 	{
 		return false;
 	}
-	m_sizeRender.cy = size.cy;
 
-	// Width is the largest of all letters
-	LONG width = 0;
-	for (auto ite = m_vecUnicodeChars.begin(); ite != m_vecUnicodeChars.end(); ite++)
+	if (size.cx == 0)
 	{
-		PlaydateFntFileWriter::UTF32CharToUtf16Char(*ite, utf16Char);
-		if (!CalcCharacterSize(utf16Char, size))
-		{
-			assert(false);
-			size.cx = 0;
-			//return false;
-		}
+		return false;
+	}
 
-		if (!m_writer->AppendCharWidth(*ite, size.cx))
-		{
-			return false;
-		}
+	if (!m_writer->AppendCharWidth(utf32Char, size.cx))
+	{
+		return false;
+	}
 
-		if (m_sizeRender.cx < size.cx)
-		{
-			m_sizeRender.cx = size.cx;
-		}
+	if (m_sizeRender.cx < size.cx)
+	{
+		m_sizeRender.cx = size.cx;
 	}
 
 	return true;

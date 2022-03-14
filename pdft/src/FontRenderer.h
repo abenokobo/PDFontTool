@@ -71,7 +71,10 @@ public:
 	bool CalcCharacterSize(const CString utf16Char, CSize& size);
 
 	///
-	bool CalcRenderSize();
+	bool CalcRenderHeight();
+
+	///
+	bool CalcRenderCharWidth(UINT32 utf32Char);
 
 	///
 	bool DrawUnicodeChars();
