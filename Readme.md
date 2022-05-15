@@ -94,4 +94,4 @@ The original documentation created by the author is in Japanese. English documen
 
 - Because pdft.exe relies heavily on Windows OS features, it is difficult to make it work on other platforms.
 - Playdate is © Panic Inc. PDFontTool is not an official Panic Inc. tool.
-- We assumes no responsibility for any damage caused by the use of PDFontTool.
+- We assume no responsibility for any damage caused by the use of PDFontTool.
